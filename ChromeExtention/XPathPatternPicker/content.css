@@ -1,0 +1,11 @@
+/* ページ上の要素をハイライトするためのオーバーレイ用クラス */
+/* content.js 側で同等スタイルを直接指定しているが、参考として定義しておく */
+
+.xpath-picker-overlay {
+    position: fixed;
+    border: 2px solid #FFD700;
+    background-color: rgba(255, 255, 0, 0.3);
+    pointer-events: none;
+    z-index: 2147483647;
+    box-sizing: border-box;
+}
