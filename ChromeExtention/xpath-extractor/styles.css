@@ -1,0 +1,91 @@
+/**
+ * ハイライト表示とホバーエフェクト用のスタイル定義
+ * !important を使用してページのスタイルに影響されないようにする
+ */
+
+/* ========================================
+   選択モード時のカーソル変更
+   ======================================== */
+
+body.xpath-extractor-active {
+    cursor: crosshair !important;
+}
+
+body.xpath-extractor-active * {
+    cursor: crosshair !important;
+}
+
+/* ========================================
+   ホバーエフェクト
+   ======================================== */
+
+.xpath-extractor-hover {
+    outline: 2px solid #FF6B6B !important;
+    outline-offset: -2px !important;
+}
+
+/* ========================================
+   ハイライトオーバーレイの基本スタイル
+   （JavaScriptで動的に適用されるが、フォールバック用に定義）
+   ======================================== */
+
+.xpath-extractor-highlight {
+    position: absolute !important;
+    pointer-events: none !important;
+    z-index: 2147483647 !important;
+    box-sizing: border-box !important;
+    transition: opacity 0.15s ease-in-out !important;
+}
+
+/* 選択された要素（黄色） */
+.xpath-extractor-highlight[data-highlight-type="selected"] {
+    background-color: rgba(255, 255, 0, 0.3) !important;
+    border: 2px solid #FFD700 !important;
+}
+
+/* パターン一致要素（緑） */
+.xpath-extractor-highlight[data-highlight-type="matched"] {
+    background-color: rgba(144, 238, 144, 0.25) !important;
+    border: 1px dashed #32CD32 !important;
+}
+
+/* ========================================
+   アニメーション効果
+   ======================================== */
+
+@keyframes xpath-extractor-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 215, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 215, 0, 0);
+    }
+}
+
+.xpath-extractor-highlight[data-highlight-type="selected"] {
+    animation: xpath-extractor-pulse 2s infinite !important;
+}
+
+/* ========================================
+   非表示要素への対応
+   ======================================== */
+
+/* display: none や visibility: hidden の要素には
+   ハイライトを表示しないが、選択は可能にする */
+
+/* ========================================
+   印刷時にハイライトを非表示
+   ======================================== */
+
+@media print {
+    .xpath-extractor-highlight {
+        display: none !important;
+    }
+    
+    .xpath-extractor-hover {
+        outline: none !important;
+    }
+}

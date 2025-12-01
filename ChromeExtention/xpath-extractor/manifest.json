@@ -1,0 +1,46 @@
+{
+    "manifest_version": 3,
+    "name": "XPath Pattern Extractor",
+    "version": "1.0.0",
+    "description": "Click elements to extract data using XPath patterns - 要素をクリックしてXPathパターンでデータを抽出",
+    "permissions": [
+        "activeTab",
+        "tabs",
+        "scripting",
+        "storage"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "content.js"
+            ],
+            "css": [
+                "styles.css"
+            ],
+            "run_at": "document_idle"
+        }
+    ],
+    "action": {
+        "default_popup": "popup.html",
+        "default_icon": {
+            "16": "icons/icon16.png",
+            "48": "icons/icon48.png",
+            "128": "icons/icon128.png"
+        }
+    },
+    "commands": {
+        "toggle-selection": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+E",
+                "mac": "Command+Shift+E"
+            },
+            "description": "Toggle element selection mode"
+        }
+    }
+}
