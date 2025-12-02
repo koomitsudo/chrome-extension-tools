@@ -1,0 +1,31 @@
+<!-- popup.html -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XPath Picker</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="popup-container">
+        <h1 class="popup-title">XPath Picker</h1>
+        
+        <div class="status-section">
+            <span class="status-label">状態:</span>
+            <span id="statusText" class="status-value">OFF</span>
+        </div>
+        
+        <div class="button-section">
+            <button id="btnOn" class="btn btn-on">ON</button>
+            <button id="btnOff" class="btn btn-off">OFF</button>
+        </div>
+        
+        <div class="hint-section">
+            <p>ONにした後、ページ上の要素をクリックしてください。</p>
+            <p>ダブルクリックで選択解除できます。</p>
+        </div>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>

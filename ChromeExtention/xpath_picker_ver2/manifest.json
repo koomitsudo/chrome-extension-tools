@@ -1,0 +1,23 @@
+// manifest.json
+{
+    "manifest_version": 3,
+    "name": "XPath Picker",
+    "version": "1.0.0",
+    "description": "HTML要素をクリックで選択し、XPathを使ってテキストを取得するツール",
+    "permissions": [
+        "activeTab",
+        "scripting"
+    ],
+    "action": {
+        "default_popup": "popup.html",
+        "default_title": "XPath Picker"
+    },
+    "background": {
+        "service_worker": "service_worker.js"
+    },
+    "icons": {
+        "16": "icons/icon16.png",
+        "48": "icons/icon48.png",
+        "128": "icons/icon128.png"
+    }
+}
