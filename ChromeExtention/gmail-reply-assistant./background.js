@@ -2,12 +2,11 @@
 
 // 非同期でchrome.storageから設定値を取得するユーティリティ関数
 async function getSettings() {
-    return new Promise((resolve) => {
+    const syncPromise = new Promise((resolve) => {
         chrome.storage.sync.get(
             {
                 apiBaseUrl: "",
                 apiModel: "",
-                apiKey: "",
                 purposes: [
                     "請求書送付",
                     "入金確認",
@@ -20,6 +19,31 @@ async function getSettings() {
             }
         );
     });
+    const localPromise = new Promise((resolve) => {
+        chrome.storage.local.get(
+            {
+                apiKey: ""
+            },
+            (items) => {
+                resolve(items);
+            }
+        );
+    });
+    const results = await Promise.all([syncPromise, localPromise]);
+    const syncItems = results[0];
+    const localItems = results[1];
+    return {
+        apiBaseUrl: syncItems.apiBaseUrl || "",
+        apiModel: syncItems.apiModel || "",
+        purposes: Array.isArray(syncItems.purposes) && syncItems.purposes.length > 0 ? syncItems.purposes : [
+            "請求書送付",
+            "入金確認",
+            "督促",
+            "一般的なお礼"
+        ],
+        // apiKeyは同期されないlocalストレージからのみ取得する
+        apiKey: localItems.apiKey || ""
+    };
 }
 
 // LLM APIに対してリクエストを送信する関数
@@ -116,7 +140,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         (async () => {
             try {
                 const settings = await getSettings();
-                // mask前のoriginalTextはここには送られてこない設計とし、機密情報はマスクされた形でのみ外部送信する
+                // mask前のoriginalTextはここには送られてこない設計とし、
+                // 機密情報はマスクされた形でのみ外部送信する。
                 const replyText = await callLlmApi(settings, {
                     maskedText: message.maskedText || "",
                     purpose: message.purpose || "",
