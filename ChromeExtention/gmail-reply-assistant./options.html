@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Gmail AI Reply Assistant 設定</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="ai-options-body">
+    <div class="ai-options-container">
+        <h1 class="ai-options-title">Gmail AI Reply Assistant 設定</h1>
+
+        <form id="ai-options-form">
+            <div class="ai-options-section">
+                <h2 class="ai-options-section-title">API設定</h2>
+
+                <label class="ai-options-label">
+                    APIベースURL
+                    <input id="apiBaseUrl" type="text" class="ai-options-input" placeholder="例: https://api.openai.com/v1">
+                </label>
+
+                <label class="ai-options-label">
+                    モデル名
+                    <input id="apiModel" type="text" class="ai-options-input" placeholder="例: gpt-4.1-mini">
+                </label>
+
+                <label class="ai-options-label">
+                    APIキー
+                    <input id="apiKey" type="password" class="ai-options-input" autocomplete="off">
+                </label>
+            </div>
+
+            <div class="ai-options-section">
+                <h2 class="ai-options-section-title">用途プリセット</h2>
+                <p class="ai-options-help">用途セレクトボックスに表示するラベルを編集できます。</p>
+
+                <label class="ai-options-label">
+                    用途1
+                    <input id="purpose1" type="text" class="ai-options-input" placeholder="請求書送付">
+                </label>
+
+                <label class="ai-options-label">
+                    用途2
+                    <input id="purpose2" type="text" class="ai-options-input" placeholder="入金確認">
+                </label>
+
+                <label class="ai-options-label">
+                    用途3
+                    <input id="purpose3" type="text" class="ai-options-input" placeholder="督促">
+                </label>
+
+                <label class="ai-options-label">
+                    用途4
+                    <input id="purpose4" type="text" class="ai-options-input" placeholder="一般的なお礼">
+                </label>
+            </div>
+
+            <div class="ai-options-footer">
+                <button id="saveButton" type="button" class="ai-options-primary-button">保存</button>
+                <span id="statusMessage" class="ai-options-status"></span>
+            </div>
+        </form>
+    </div>
+
+    <script src="options.js"></script>
+</body>
+</html>
