@@ -1,0 +1,187 @@
+/* Gmail上のボタンおよびモーダル、オプションページのスタイルを定義する */
+
+/* Gmail返信欄の近くに追加されるAI返信ボタン */
+.ai-reply-button {
+    margin-left: 8px;
+    margin-top: 4px;
+    padding: 4px 8px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+/* モーダル用オーバーレイ */
+.ai-reply-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* モーダル本体 */
+.ai-reply-modal {
+    background: #ffffff;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80%;
+    padding: 16px;
+    box-sizing: border-box;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 13px;
+}
+
+/* モーダルタイトル */
+.ai-reply-modal-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+/* ラベル */
+.ai-reply-label {
+    display: block;
+    font-size: 12px;
+    margin-top: 4px;
+    margin-bottom: 2px;
+}
+
+/* テキストエリア共通 */
+.ai-reply-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 12px;
+    resize: vertical;
+}
+
+/* プレビュー専用テキストエリア */
+.ai-reply-preview {
+    height: 100px;
+}
+
+/* メモ用テキストエリア */
+.ai-reply-memo {
+    height: 80px;
+}
+
+/* セレクトボックス */
+.ai-reply-select {
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 12px;
+}
+
+/* ボタン行 */
+.ai-reply-button-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+/* プライマリボタン */
+.ai-reply-primary-button {
+    padding: 4px 12px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+/* セカンダリボタン */
+.ai-reply-secondary-button {
+    padding: 4px 12px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+/* ステータスメッセージ */
+.ai-reply-status {
+    font-size: 11px;
+    color: #555555;
+    margin-top: 4px;
+}
+
+/* オプションページ全体 */
+.ai-options-body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* オプションページコンテナ */
+.ai-options-container {
+    max-width: 640px;
+    margin: 24px auto;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+/* オプションページタイトル */
+.ai-options-title {
+    font-size: 20px;
+    margin-bottom: 16px;
+}
+
+/* セクション */
+.ai-options-section {
+    margin-bottom: 16px;
+    padding: 12px;
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+}
+
+/* セクションタイトル */
+.ai-options-section-title {
+    font-size: 14px;
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+
+/* ラベル */
+.ai-options-label {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+/* 入力欄 */
+.ai-options-input {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 4px;
+    padding: 4px 6px;
+    font-size: 13px;
+}
+
+/* ヘルプテキスト */
+.ai-options-help {
+    font-size: 12px;
+    color: #555555;
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+
+/* フッター */
+.ai-options-footer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+/* 保存ボタン */
+.ai-options-primary-button {
+    padding: 6px 12px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+/* ステータス表示 */
+.ai-options-status {
+    font-size: 12px;
+    color: #008000;
+}
