@@ -1,10 +1,10 @@
 {
     "manifest_version": 3,
-    "name": "効率化事例チートシート",
-    "description": "Chrome拡張で実現する非エンジニア向けの事務処理作業の効率化事例20選を、いつでも参照できるチートシートとして表示する拡張機能です。",
+    "name": "業務チートシート",
+    "description": "Git, GitHub, VS Code, Notion, Looker Studio, n8nなどの基本操作やリカバリ手順をまとめたチートシートを表示します。",
     "version": "1.0.0",
     "action": {
-        "default_title": "効率化事例チートシート",
+        "default_title": "業務チートシート",
         "default_popup": "popup.html"
     }
 }
