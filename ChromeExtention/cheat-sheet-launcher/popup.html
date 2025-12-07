@@ -2,208 +2,509 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <!-- ビューポート設定により高DPI環境や小さい画面でもレイアウトが崩れにくくする -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>効率化事例チートシート</title>
-    <!-- スタイルシートを読み込む -->
+    <title>チートシート</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- コンテナ全体。最大幅をCSS側で制御して見やすさを確保する -->
     <div class="popup-container">
-        <!-- ヘッダータイトル。拡張機能の目的を簡潔に示す -->
         <header class="popup-header">
-            <h1 class="popup-title">効率化事例チートシート</h1>
-            <p class="popup-subtitle">Chrome拡張で実現する非エンジニア向け事務処理効率化20選</p>
         </header>
 
-        <!-- タブメニュー。クリックされたタブに応じてコンテンツを切り替える -->
         <nav class="tab-menu">
-            <!-- data-tab属性で対応するコンテンツIDを紐付ける。初期表示はタブ1をactiveにする -->
-            <button class="tab-button active" data-tab="tab1">自動化・連携</button>
-            <button class="tab-button" data-tab="tab2">情報収集・監視</button>
-            <button class="tab-button" data-tab="tab3">翻訳・リスト化</button>
-            <button class="tab-button" data-tab="tab4">画像・操作補助</button>
-            <button class="tab-button" data-tab="tab5">テスト・編集</button>
+            <button class="tab-button active" data-tab="tab-git">Git</button>
+            <button class="tab-button" data-tab="tab-github">GitHub</button>
+            <button class="tab-button" data-tab="tab-vscode">VS Code</button>
+            <button class="tab-button" data-tab="tab-looker">Looker Studio</button>
+            <button class="tab-button" data-tab="tab-notion-basic">Notion</button>
+            <button class="tab-button" data-tab="tab-notion-short">Notion Short Cut</button>
+            <button class="tab-button" data-tab="tab-notion-case">Notion事例</button>
+            <button class="tab-button" data-tab="tab-n8n">n8n基本</button>
         </nav>
 
-        <!-- コンテンツ領域。タブごとに4つずつ事例を配置する -->
         <main class="tab-container">
-            <!-- タブ1: 自動化・連携 事例1〜4 -->
-            <section id="tab1" class="tab-content active">
-                <!-- テーブル全体。作業・目的と詳細補足・留意点の2カラム構成とする -->
+            <section id="tab-git" class="tab-content active">
                 <table class="case-table">
                     <thead>
                         <tr>
-                            <th class="col-task">作業・目的</th>
-                            <th class="col-detail">詳細補足・留意点</th>
+                            <th style="width: 30%;">操作・コマンド</th>
+                            <th style="width: 70%;">詳細・リカバリ</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- 事例1 -->
-                        <!-- 実際には直前の会話で作成した事例テキストをそのまま貼り付けることを想定している -->
+                        <tr><td><strong>git init</strong></td><td>新規リポジトリの初期化。<br><code>.git</code> フォルダを作成して管理を開始する。</td></tr>
+                        <tr><td><strong>git clone</strong></td><td><code>git clone [url]</code><br>既存のリモートリポジトリをローカルに複製する。</td></tr>
+                        <tr><td><strong>git status</strong></td><td>現在の変更状況を確認。<br>「困ったらまず実行」で状況を把握する。</td></tr>
+                        <tr><td><strong>git add</strong></td><td><code>git add .</code><br>変更をステージングエリア（コミット準備）に追加する。</td></tr>
+                        <tr><td><strong>git restore</strong></td><td><code>git restore file.txt</code><br>作業ディレクトリの変更を取り消す（addする前）。</td></tr>
+                        <tr><td><strong>git restore --staged</strong></td><td><code>git restore --staged file.txt</code><br>addを取り消してステージングから降ろす。</td></tr>
+                        <tr><td><strong>git reset HEAD</strong></td><td><code>git reset HEAD file.txt</code><br>addを取り消す従来の方法。最近はrestore推奨。</td></tr>
+                        <tr><td><strong>git commit</strong></td><td><code>git commit -m "msg"</code><br>ステージングした変更を履歴に記録する。</td></tr>
+                        <tr><td><strong>git commit --amend</strong></td><td>直前のコミット内容やメッセージを修正する。<br><strong>Push済みには使用禁止。</strong></td></tr>
+                        <tr><td><strong>git reset --soft HEAD^</strong></td><td>直前のコミットだけ取り消し、変更はステージングに残す。</td></tr>
+                        <tr><td><strong>git reset --mixed HEAD^</strong></td><td>直前のコミットとステージングを取り消し、変更はファイルとして残す（デフォルト）。</td></tr>
+                        <tr><td><strong>git reset --hard HEAD^</strong></td><td>直前のコミットと変更を<strong>完全に削除</strong>する。<br>危険なため実行前に確認推奨。</td></tr>
+                        <tr><td><strong>git reset --hard &lt;commit&gt;</strong></td><td>特定のコミットまで履歴を強制的に戻す。その後の履歴は消える。</td></tr>
+                        <tr><td><strong>git revert</strong></td><td><code>git revert [commit]</code><br>履歴を残したまま、指定コミットを打ち消すコミットを作成する。安全。</td></tr>
+                        <tr><td><strong>git reflog</strong></td><td>HEADの移動履歴を表示。<br><code>reset --hard</code> で消えたコミットもここから探して復元できる最強のリカバリ手段。</td></tr>
+                        <tr><td><strong>git reset --hard HEAD@{n}</strong></td><td>reflogで見つけた過去の状態へ復元する。</td></tr>
+                        <tr><td><strong>git stash</strong></td><td>作業を一時退避する。</td></tr>
+                        <tr><td><strong>git stash pop</strong></td><td>退避した作業を復元する。</td></tr>
+                        <tr><td><strong>git stash list</strong></td><td>退避した作業一覧を表示する。</td></tr>
+                        <tr><td><strong>git branch</strong></td><td>ブランチ一覧表示・作成。</td></tr>
+                        <tr><td><strong>git switch</strong></td><td>ブランチの切り替え。<br><code>git switch -c new-branch</code> で作成と切り替えを同時に行う。</td></tr>
+                        <tr><td><strong>git checkout</strong></td><td>ブランチ切り替え（従来版）。</td></tr>
+                        <tr><td><strong>git merge</strong></td><td>別ブランチを統合する。<br>コンフリクト時は手動修正してコミットする。</td></tr>
+                        <tr><td><strong>git log</strong></td><td>コミット履歴を確認する。</td></tr>
+                        <tr><td><strong>git log --oneline --graph</strong></td><td>コミット履歴をグラフで視覚的に確認する。</td></tr>
+                        <tr><td><strong>git diff</strong></td><td>変更差分を表示する。</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="tab-github" class="tab-content">
+                <table class="case-table">
+                    <thead>
                         <tr>
-                            <td>定型Webフォームからスプレッドシートへの自動転記</td>
-                            <td>問い合わせフォームや見積依頼フォームの入力結果を、拡張機能でDOMから取得し、クリック一つでスプレッドシート用のタブ区切りテキストとしてクリップボードにコピーする。非エンジニアでもフォーム項目と列の対応をあらかじめテンプレート化しておけば、毎回コピーペーストや整形を繰り返さずに済む。項目の追加や名称変更が発生した場合は、テンプレート側のマッピングルールを更新する運用にしておくと混乱を防げる。</td>
+                            <th style="width: 30%;">操作・作業</th>
+                            <th style="width: 70%;">詳細補足・リカバリ</th>
                         </tr>
-                        <!-- 事例2 -->
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>リポジトリの作成</strong></td><td>New Repositoryから作成。Public/Privateを選択。間違えてもSettingsから削除可能。</td></tr>
+                        <tr><td><strong>ファイルの作成・編集</strong></td><td>Web上の「Add file」や鉛筆アイコンから直接編集可能。PreviewタブでMarkdown確認。</td></tr>
+                        <tr><td><strong>ファイル編集中の変更破棄</strong></td><td><strong>【リカバリ】</strong> 編集画面で「Cancel changes」を押せばコミット前に変更を破棄できる。</td></tr>
+                        <tr><td><strong>ブランチの作成</strong></td><td>ファイル一覧左上のブランチ選択ボタンに新しい名前を入力して作成。</td></tr>
+                        <tr><td><strong>プルリクエストの作成</strong></td><td>変更をmain等に統合する依頼。「Compare & pull request」から作成。</td></tr>
+                        <tr><td><strong>Issueの作成</strong></td><td>バグ報告やタスク管理に使用。LabelやAssigneesを設定すると管理しやすい。</td></tr>
+                        <tr><td><strong>コミット履歴の確認</strong></td><td>「commits」リンクから履歴一覧を確認。各コミットをクリックで詳細差分を表示。</td></tr>
+                        <tr><td><strong>プルリクエストのマージ</strong></td><td>レビュー完了後「Merge pull request」ボタンで統合。競合時は解消が必要。</td></tr>
+                        <tr><td><strong>マージ後のブランチ削除</strong></td><td>マージ後の「Delete branch」で削除して整理する。</td></tr>
+                        <tr><td><strong>誤って削除したブランチの復元</strong></td><td><strong>【リカバリ】</strong> PR画面やBranches一覧の「Restore」ボタンで復元可能。</td></tr>
+                        <tr><td><strong>閉じたIssue/PRの再開</strong></td><td><strong>【リカバリ】</strong> 誤ってCloseした場合、下部の「Reopen」ボタンで即座に再開できる。</td></tr>
+                        <tr><td><strong>マージ済みPRの取り消し (Revert)</strong></td><td><strong>【リカバリ】</strong> マージ済みPR画面の「Revert」ボタンを押すと、変更を打ち消すPRが自動作成される。</td></tr>
+                        <tr><td><strong>リポジトリのフォーク (Fork)</strong></td><td>他人のリポジトリを自分のアカウントにコピーして編集可能にする。</td></tr>
+                        <tr><td><strong>リポジトリのクローン (Clone)</strong></td><td>緑色のCodeボタンからURLを取得し、ローカルPCにダウンロードする。</td></tr>
+                        <tr><td><strong>リポジトリの削除</strong></td><td>Settings最下部「Danger Zone」から削除。復元困難なため要注意。</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="tab-vscode" class="tab-content">
+                <table class="case-table">
+                    <thead>
                         <tr>
-                            <td>受注管理システムと社内タスク管理ツールの連携補助</td>
-                            <td>受注管理のWeb画面を開いた状態で、案件名や納期、担当者など必要な項目をまとめて読み取り、タスク管理ツールに登録するためのテンプレート文を生成する。人が行うのは「対象案件を開いてボタンを押す」だけにし、タスクの粒度や命名規則、期限の書式などは拡張機能側の整形ロジックに寄せることで入力ミスを減らす。実際のシステム間連携が組めない場合でも、半自動のコピーペースト連携として現場レベルの効率化が期待できる。</td>
+                            <th style="width: 35%;">操作・ショートカット</th>
+                            <th style="width: 65%;">詳細・リカバリ</th>
                         </tr>
-                        <!-- 事例3 -->
+                    </thead>
+                    <tbody>
                         <tr>
-                            <td>顧客一覧ページからメール一斉送信用のリスト生成</td>
-                            <td>顧客一覧や案件一覧のWebテーブルから、必要な列だけを抽出してメーラーや配信ツールに渡すためのアドレスリストを生成する。例えばチェックボックスで対象を選択してから拡張機能のボタンを押すと、「顧客名＋メールアドレス」の一覧を一度でコピーできるようにする。BCC送信の場合は、アドレスのみをコンマ区切りで出力するなど用途に応じたフォーマットを持たせると現場での使い勝手が大きく向上する。</td>
+                            <td>
+                                <span class="shortcut">タイムライン機能</span>
+                                <span class="op-name">(左サイドバー)</span>
+                            </td>
+                            <td><strong>【重要】</strong> ファイルの保存履歴が自動記録されており、誤って上書きしても過去の状態に戻せる。</td>
                         </tr>
-                        <!-- 事例4 -->
                         <tr>
-                            <td>社内申請フォームの定型入力の半自動化</td>
-                            <td>交通費精算や備品申請など、パターンが決まっている申請フォームについて、よく使う入力セットを拡張機能側に登録しておき、クリック一つで入力欄に流し込む。日付や金額など、毎回異なる箇所だけ人が編集する前提にすることで、申請書の書き方ルールや文言のブレを抑えられる。入力自動化はやりすぎると誤申請のリスクがあるため、あえて「最後の確認は人が必ず行う」設計にしておくと運用上安全である。</td>
+                            <td>
+                                <span class="shortcut">Ctrl+S</span> / <span class="shortcut">Cmd+S</span>
+                            </td>
+                            <td>保存。基本中の基本。こまめな保存がクラッシュ時の被害を防ぐ。</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="shortcut">Ctrl+Shift+S</span> / <span class="shortcut">Cmd+Shift+S</span>
+                            </td>
+                            <td>名前を付けて保存。バックアップとして別名保存する際などに使用。</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="shortcut">Ctrl+Shift+T</span> / <span class="shortcut">Cmd+Shift+T</span>
+                            </td>
+                            <td><strong>【リカバリ】</strong> 誤って閉じたタブを再表示する。連打すれば履歴順に復元可能。</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="shortcut">Ctrl+K Ctrl+W</span> / <span class="shortcut">Cmd+K Cmd+W</span>
+                            </td>
+                            <td>すべてのタブを閉じる。誤操作注意。閉じた場合は上記のショートカットで復元。</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="shortcut">Ctrl+Shift+K</span> / <span class="shortcut">Cmd+Shift+K</span>
+                            </td>
+                            <td>行の削除。カーソル行を一発で削除する。</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="shortcut">Alt+↑↓</span> / <span class="shortcut">Opt+↑↓</span>
+                            </td>
+                            <td>行の移動。コピペせずに行を入れ替えられる。</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="shortcut">Alt+Shift+↑↓</span> / <span class="shortcut">Opt+Shift+↑↓</span>
+                            </td>
+                            <td>行の複製。現在の行をそのまま下にコピーする。</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="shortcut">Ctrl+F</span> / <span class="shortcut">Cmd+F</span>
+                            </td>
+                            <td>ファイル内検索。誤って消した箇所を探すのにも使える。</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="shortcut">Ctrl+H</span> / <span class="shortcut">Cmd+Opt+F</span>
+                            </td>
+                            <td>置換。一括修正用。プレビューで確認してから実行推奨。</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="shortcut">Ctrl+Shift+F</span> / <span class="shortcut">Cmd+Shift+F</span>
+                            </td>
+                            <td>全体検索。プロジェクト内の全ファイルから文字列を探す。</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="shortcut">Ctrl+P</span> / <span class="shortcut">Cmd+P</span>
+                            </td>
+                            <td>クイックオープン。ファイル名を入力して素早く開く。</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="shortcut">Ctrl+G</span> / <span class="shortcut">Cmd+Ctrl+G</span>
+                            </td>
+                            <td>指定行へジャンプ。エラーログの行番号へ飛ぶのに便利。</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="shortcut">Ctrl+/</span> / <span class="shortcut">Cmd+/</span>
+                            </td>
+                            <td>コメントアウト。削除せずに無効化したい時に使う。</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="shortcut">Ctrl+B</span> / <span class="shortcut">Cmd+B</span>
+                            </td>
+                            <td>サイドバー表示切替。画面を広く使いたい時に。</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="shortcut">Ctrl+Shift+P</span> / <span class="shortcut">Cmd+Shift+P</span>
+                            </td>
+                            <td>コマンドパレット。全機能を検索・実行できる万能コマンド。</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="shortcut">ゴミ箱からの復元</span>
+                            </td>
+                            <td>VS Codeで削除したファイルはOSのゴミ箱に入るのでそこから復元可能。</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="shortcut">Local History 拡張</span>
+                            </td>
+                            <td><strong>【推奨】</strong> 拡張機能を入れておくと、保存ごとのバックアップ履歴が残る。</td>
                         </tr>
                     </tbody>
                 </table>
             </section>
 
-            <!-- タブ2: 情報収集・監視 事例5〜8 -->
-            <section id="tab2" class="tab-content">
+            <section id="tab-looker" class="tab-content">
                 <table class="case-table">
                     <thead>
                         <tr>
-                            <th class="col-task">作業・目的</th>
-                            <th class="col-detail">詳細補足・留意点</th>
+                            <th style="width: 30%;">操作・作業</th>
+                            <th style="width: 70%;">詳細・リカバリ</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- 事例5 -->
+                        <tr><td><strong>シンプルな表（テーブル）を作る</strong></td><td>ディメンションと指標をドラッグ＆ドロップ。表示がおかしい時は一度クリアして再設定。</td></tr>
+                        <tr><td><strong>スコアカードで合計・平均を表示</strong></td><td>重要KPIを一目で把握。「集計方法」（合計・平均・カウントなど）の設定ミスに注意。</td></tr>
+                        <tr><td><strong>折れ線グラフで時系列を可視化</strong></td><td>ディメンションに日付を設定。粒度（日・週・月）は詳細設定で変更可能。</td></tr>
+                        <tr><td><strong>フィルタコントロール追加</strong></td><td>期間やプルダウンで条件切り替え。効かない場合は「適用範囲」やデータソースを確認。</td></tr>
+                        <tr><td><strong>レポートレベル vs グラフレベル</strong></td><td>フィルタの適用範囲の違い。誤って全体に効かせた場合は「レポートレベルから削除」で戻す。</td></tr>
+                        <tr><td><strong>ページの追加・複製</strong></td><td>似たレポートを作る際はページごと複製し、データソースだけ差し替えると効率的。</td></tr>
+                        <tr><td><strong>グラフのコピペとデータ差し替え</strong></td><td>既存グラフをコピーして別データのプロパティに変更。値がおかしい時は元に戻して確認。</td></tr>
+                        <tr><td><strong>計算フィールドでCTR/CVRを作る</strong></td><td><code>Clicks / Impressions</code> など独自の指標を作成。分母0のエラーはIF関数で回避。</td></tr>
+                        <tr><td><strong>CASE式でカテゴリ分け</strong></td><td>条件に応じたランク分けやグルーピングを作成。NULL対策にELSEを用意する。</td></tr>
+                        <tr><td><strong>並べ替え（ソート）設定</strong></td><td>重要な順にデータを並べる。意図しない順序の時はソート対象フィールドを確認。</td></tr>
+                        <tr><td><strong>データコントロール追加</strong></td><td>GA4などのプロパティを閲覧者が切り替えられるようにする。フィールド共通化に注意。</td></tr>
+                        <tr><td><strong>デフォルト集計方法の確認</strong></td><td>データソース側でSUM/AVGなどが正しく設定されているか確認する。</td></tr>
+                        <tr><td><strong>レポートの共有設定と権限</strong></td><td>閲覧者と編集者を分け、誤編集を防ぐ。誤った場合はバージョン履歴で戻す。</td></tr>
+                        <tr><td><strong>編集モード／表示モードの切替</strong></td><td>誤操作防止のため、閲覧時は必ず表示モードにする。</td></tr>
+                        <tr><td><strong>統合（混合データ）の基本設定</strong></td><td>複数データソースをキー（日付など）で結合。重複や欠損時は結合タイプを見直す。</td></tr>
+                        <tr><td><strong>不要なフィールド・統合の整理</strong></td><td>使わない計算フィールド等は削除して軽量化。削除ミスは「元に戻す」で対応。</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="tab-notion-basic" class="tab-content">
+                <table class="case-table">
+                    <thead>
                         <tr>
-                            <td>重要なお知らせページの更新差分チェック</td>
-                            <td>行政機関や取引先ベンダーの「お知らせ」ページを開いたときに、ページ内の主要なテキストを取得してローカル保存しておき、次回アクセス時に差分を簡易的に表示する。人手で毎回全文を読み比べるのではなく、「新しく追記された箇所」や「日付が変わった箇所」に視線を集中できるようにすることで、規約変更や料金改定などの見落としを減らす。正式な監視サービスではないため、重要度の高いページは別途手動確認するなど役割分担を意識する。</td>
+                            <th style="width: 30%;">操作・作業</th>
+                            <th style="width: 70%;">詳細・リカバリ</th>
                         </tr>
-                        <!-- 事例6 -->
+                    </thead>
+                    <tbody>
                         <tr>
-                            <td>競合サービスの料金ページのスナップショット保存</td>
-                            <td>料金表やプラン比較ページを開いたタイミングで、表データをテキスト化してローカルに時系列で保存しておき、簡単な履歴一覧として参照できるようにする。担当者は「たまに確認したときに拡張機能ボタンを押す」だけでよく、過去との違いを後から見返す際に役立つ。正確な価格比較資料を作る前段として、非エンジニアでも無理なく続けられる軽量な情報蓄積の仕組みとして位置づけるとよい。</td>
+                            <td><span class="index">1.</span>ブロックの基本と「/」コマンド</td>
+                            <td>「/」と打つとメニューが開き、種類を選んで追加。間違えたら「Turn into」で変換可能。</td>
                         </tr>
-                        <!-- 事例7 -->
                         <tr>
-                            <td>FAQやヘルプページからの内部ナレッジ抽出</td>
-                            <td>よく参照する外部サービスのヘルプページを閲覧しながら、必要なQ&Aだけを選択して拡張機能のボタンを押すと、社内用ナレッジの下書きフォーマットに変換してコピーできるようにする。元サイトの著作権ポリシーに配慮しつつ、自社マニュアルに転記する前提で、タイトル、要約、URL、最終閲覧日などを自動付与しておくと後から見返しやすい。社内共有時には、原文へのリンクと併記しておく運用が望ましい。</td>
+                            <td><span class="index">2.</span>ページ履歴（バージョン履歴）を確認</td>
+                            <td><strong>【重要】</strong> 右上の時計アイコンから履歴を確認・復元。誤消去時の対策。</td>
                         </tr>
-                        <!-- 事例8 -->
                         <tr>
-                            <td>取引先一覧から定期フォロー対象の抽出</td>
-                            <td>CRMや管理画面上の取引先一覧を開き、最後の取引日やステータスの列をもとに「しばらく連絡していない顧客」を簡易的に抽出する。拡張機能側で閾値日数を指定できるようにしておくと、「90日以上接点なしの顧客だけをリスト化する」といった簡易スクリーニングが誰でもできる。正式なスコアリングやレポートは別途BIツールに任せつつ、現場担当者がブラウザ上で素早く気付きを得る用途に向いている。</td>
+                            <td><span class="index">3.</span>検索でページや失った情報を探す</td>
+                            <td><code>Cmd/Ctrl + P</code>。ゴミ箱を見る前にまず検索でタイトル・本文を探す。</td>
+                        </tr>
+                        <tr>
+                            <td><span class="index">4.</span>テンプレートギャラリーを利用</td>
+                            <td>公式テンプレートを複製して使うと、元を壊す心配なく編集できる。</td>
+                        </tr>
+                        <tr>
+                            <td><span class="index">5.</span>見出し・区切り線でページを整理</td>
+                            <td>「/heading」「/divider」で構造化。「Turn into」で後から見出しレベル変更も可能。</td>
+                        </tr>
+                        <tr>
+                            <td><span class="index">6.</span>To-doリストでタスク管理</td>
+                            <td>完了タスクは消さずにチェックで残すと履歴になる。誤削除防止にもなる。</td>
+                        </tr>
+                        <tr>
+                            <td><span class="index">7.</span>シンプルなテーブルデータベース</td>
+                            <td>インラインテーブルで簡易DB作成。列を増やしすぎて混乱したら履歴から戻す。</td>
+                        </tr>
+                        <tr>
+                            <td><span class="index">8.</span>プロパティ（列）を追加・編集</td>
+                            <td>列の型変更はデータ消失のリスクがあるため、変更前にページ複製でテスト推奨。</td>
+                        </tr>
+                        <tr>
+                            <td><span class="index">9.</span>ソートとフィルター</td>
+                            <td>「データが消えた」と思ったらフィルターを確認。解除すると表示されることが多い。</td>
+                        </tr>
+                        <tr>
+                            <td><span class="index">10.</span>ビューの切り替え</td>
+                            <td>同じDBをボードやカレンダーで表示。ビューを削除してもデータは消えない。</td>
+                        </tr>
+                        <tr>
+                            <td><span class="index">11.</span>ページリンクと@メンション</td>
+                            <td>「@ページ名」でリンクを作成。ハブページを作って整理すると迷子になりにくい。</td>
+                        </tr>
+                        <tr>
+                            <td><span class="index">12.</span>サイドバー整理とお気に入り</td>
+                            <td>ドラッグで階層化。場所が不明になったら検索し、トップレベルに戻して整理。</td>
+                        </tr>
+                        <tr>
+                            <td><span class="index">13.</span>トグル（折りたたみ）</td>
+                            <td>情報を隠してスッキリさせる。消えたと思ったらトグルが開いているか確認。</td>
+                        </tr>
+                        <tr>
+                            <td><span class="index">14.</span>埋め込み（Embed）</td>
+                            <td>外部サイトや動画を埋め込み。表示されない場合はリンクとして残す。</td>
+                        </tr>
+                        <tr>
+                            <td><span class="index">15.</span>共有設定と公開リンク</td>
+                            <td>Web公開のオンオフ確認。誤公開時は即座にオフにすればアクセス不可になる。</td>
+                        </tr>
+                        <tr>
+                            <td><span class="index">16.</span>ページの複製（Duplicate）</td>
+                            <td>DB改造やレイアウト変更の実験は、複製したページで行うと安全。</td>
+                        </tr>
+                        <tr>
+                            <td><span class="index">17.</span>インラインDBとフルページDB</td>
+                            <td>複雑になったインラインDBはフルページに移し替え、リンクドビューで表示すると整理しやすい。</td>
+                        </tr>
+                        <tr>
+                            <td><span class="index">18.</span>同期ブロック（Synced block）</td>
+                            <td>複数箇所の記述を同期。解除時は「Unsync」しないと全箇所消えるので注意。</td>
+                        </tr>
+                        <tr>
+                            <td><span class="index">19.</span>モバイルアプリと同期の注意</td>
+                            <td>電波不安定時の編集はラグがある。重要な編集は安定した回線で行う。</td>
+                        </tr>
+                        <tr>
+                            <td><span class="index">20.</span>エクスポートでバックアップ</td>
+                            <td>Markdown/HTML形式で定期的にエクスポートし、ローカルに保存しておく。</td>
+                        </tr>
+                        <tr>
+                            <td><span class="index">21.</span>「シンプルを保つ」設計のコツ</td>
+                            <td>最初はDB数を絞る。複雑すぎるDBは作り直す前に小さな整理を繰り返す。</td>
                         </tr>
                     </tbody>
                 </table>
             </section>
 
-            <!-- タブ3: 翻訳・リスト化 事例9〜12 -->
-            <section id="tab3" class="tab-content">
+            <section id="tab-notion-short" class="tab-content">
                 <table class="case-table">
                     <thead>
                         <tr>
-                            <th class="col-task">作業・目的</th>
-                            <th class="col-detail">詳細補足・留意点</th>
+                            <th style="width: 40%;">操作 (Mac / Win)</th>
+                            <th style="width: 60%;">機能・リカバリ</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- 事例9 -->
                         <tr>
-                            <td>海外SaaSの設定画面の項目名と説明文の翻訳メモ作成</td>
-                            <td>英語の管理画面を開き、各項目のラベルと説明文をまとめて取得して、日本語訳を追記するための二列構成のテキストを生成する。拡張機能は「英語原文側の抽出と整形」に専念し、実際の翻訳作業は別のツールや人手で行う前提にすると運用がシンプルになる。社内マニュアルやオンボーディング資料を作成する際に、翻訳済みの項目表があるだけでも作業負荷が大きく下がる。</td>
+                            <td>
+                                <span class="index">1.</span>クイック検索<br>
+                                <kbd>Cmd</kbd>+<kbd>P</kbd> / <kbd>Ctrl</kbd>+<kbd>P</kbd>
+                            </td>
+                            <td>最近のページやタイトル検索で即移動。迷子防止の最重要キー。</td>
                         </tr>
-                        <!-- 事例10 -->
                         <tr>
-                            <td>長文のお知らせ文の要素分解と箇条書きメモ化</td>
-                            <td>システムメンテナンスのお知らせや仕様変更告知など、長文の案内文を選択してからボタンを押すと、「いつ」「どこで」「何が変わるか」「利用者側の対応」「注意点」といった見出し付きの箇条書きテンプレートに整形する。あくまで構造化の補助であり、最終的な要約やニュアンス調整は人が行う設計にしておくと誤解を生みにくい。Slackや社内ポータルへの転載時に、そのまま貼り付けやすい文型にしておくと便利である。</td>
+                            <td>
+                                <span class="index">2.</span>新規ページ作成<br>
+                                <kbd>Cmd</kbd>+<kbd>N</kbd> / <kbd>Ctrl</kbd>+<kbd>N</kbd>
+                            </td>
+                            <td>とりあえずメモを取りたいときに瞬時に作成。</td>
                         </tr>
-                        <!-- 事例11 -->
                         <tr>
-                            <td>一覧画面から顧客セグメント別の簡易リスト生成</td>
-                            <td>顧客一覧や案件一覧を開いた状態で、業種やプラン種別などを条件にフィルタし、その結果を「部署共有用の簡易リスト」の形式に整える。例えば「会社名、担当者名、プラン、最終ログイン日」といった列だけを抜き出して、表形式のテキストとしてコピーできるようにする。正式なCSVエクスポート機能が用意されていないシステムでも、拡張機能を使うことで最低限のリスト化が可能となる。</td>
+                            <td>
+                                <span class="index">3.</span>取り消し (Undo)<br>
+                                <kbd>Cmd</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Z</kbd>
+                            </td>
+                            <td>消しすぎた内容や移動ミスを直前に戻す。</td>
                         </tr>
-                        <!-- 事例12 -->
                         <tr>
-                            <td>問い合わせ履歴ページからタグ候補の抽出</td>
-                            <td>サポートツールの問い合わせ一覧を開き、件名やカテゴリ列から頻出キーワードを抽出して、タグ設計やナレッジ整理のたたき台を作る。完全なテキストマイニングではなく、「画面に表示されている範囲からざっくり頻出語を拾う」程度のシンプルな仕組みに留めることで、非エンジニアでも運用可能なレベルに保つ。タグ候補はそのまま採用するのではなく、CSチームでレビューしながら絞り込むステップを必ず挟む。</td>
+                            <td>
+                                <span class="index">4.</span>やり直し (Redo)<br>
+                                <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd>
+                            </td>
+                            <td>Undoで戻りすぎた場合に再度進める。</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="index">5.</span>メニュー表示<br>
+                                <kbd>/</kbd> (スラッシュ)
+                            </td>
+                            <td>マウスを使わずにブロック種類を変更・挿入。</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="index">6.</span>見出し変換<br>
+                                <kbd>Cmd</kbd>+<kbd>Opt</kbd>+<kbd>1-3</kbd> / <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>1-3</kbd>
+                            </td>
+                            <td>選択行を見出し1〜3に素早く変換。</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="index">7.</span>To-do作成<br>
+                                <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>4</kbd> / <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>4</kbd>
+                            </td>
+                            <td>現在の行をチェックボックスに変換。</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="index">8.</span>箇条書き作成<br>
+                                <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>8</kbd> / <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>8</kbd>
+                            </td>
+                            <td>現在の行を箇条書きリストに変換。</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="index">9.</span>ブロック移動<br>
+                                <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>↑↓</kbd> / <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>↑↓</kbd>
+                            </td>
+                            <td>選択したブロックを上下に入れ替える。</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="index">10.</span>戻る / 進む<br>
+                                <kbd>Cmd</kbd>+<kbd>[</kbd> / <kbd>Ctrl</kbd>+<kbd>[</kbd>
+                            </td>
+                            <td>ブラウザバックと同様にページ遷移履歴を移動。</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="index">11.</span>サイドバー切替<br>
+                                <kbd>Cmd</kbd>+<kbd>\</kbd> / <kbd>Ctrl</kbd>+<kbd>\</kbd>
+                            </td>
+                            <td>サイドバーの表示・非表示を切り替え。</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="index">12.</span>ダークモード<br>
+                                <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd> / <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd>
+                            </td>
+                            <td>ライトモードとダークモードの切り替え。</td>
                         </tr>
                     </tbody>
                 </table>
             </section>
 
-            <!-- タブ4: 画像・操作補助 事例13〜16 -->
-            <section id="tab4" class="tab-content">
+            <section id="tab-notion-case" class="tab-content">
                 <table class="case-table">
                     <thead>
                         <tr>
-                            <th class="col-task">作業・目的</th>
-                            <th class="col-detail">詳細補足・留意点</th>
+                            <th style="width: 30%;">作業・目的</th>
+                            <th style="width: 70%;">ポイント</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- 事例13 -->
-                        <tr>
-                            <td>マニュアル用スクリーンショットの撮影支援</td>
-                            <td>特定の要素をクリックすると、対象要素の周囲にガイド枠や半透明のオーバーレイを表示して、どの部分をスクリーンショットとして切り出せばよいかを視覚的に示す。実際の撮影はWindowsやMac標準のキャプチャ機能を使うが、どこを撮ればよいかを迷わなくて済むようにするのが目的である。マニュアル作成者がページ構成を深く理解していなくても、共通の画角でキャプチャを揃えられる。</td>
-                        </tr>
-                        <!-- 事例14 -->
-                        <tr>
-                            <td>操作手順書用のクリック箇所番号表示</td>
-                            <td>ページ上で順番にクリックした要素に対して、「1」「2」「3」といった番号付きバッジを一時的に表示し、その状態でスクリーンショットを撮ることで、どの順番でどこをクリックするかが一目で分かる画像を作れるようにする。実システムには影響を与えないクライアント側の装飾にとどめ、番号の位置やスタイルはCSS側で統一しておく。操作手順書の読み手にとっては、文字だけの説明よりも理解が早くなる。</td>
-                        </tr>
-                        <!-- 事例15 -->
-                        <tr>
-                            <td>クリック位置のハイライトによる遠隔サポート補助</td>
-                            <td>画面共有中に、サポート担当者が「ここを押してください」と説明する際に、対象要素を一時的に強調表示する。例えば0.5秒だけ背景色を変えるなど、ユーザーが視線を合わせやすい軽いエフェクトに留めるとよい。実行側は拡張機能を入れたサポート担当者のみでよく、相手側の環境にはインストールを求めない設計にすることで、トラブル時の初動サポートがしやすくなる。</td>
-                        </tr>
-                        <!-- 事例16 -->
-                        <tr>
-                            <td>長いページの重要ブロックへのジャンプ支援</td>
-                            <td>約款やヘルプページなど縦に長いページで、あらかじめ「よく参照するブロック」を登録しておき、拡張機能のメニューからその位置までスクロールジャンプできるようにする。ブラウザ標準の検索ではヒットしづらい見出しや埋め込みコンポーネントにも素早く移動できるため、何度も同じページを参照するバックオフィス業務に向いている。ページ構造の変更に弱いため、定期的にリンク先がずれていないか確認する運用が必要となる。</td>
-                        </tr>
+                        <tr><td>タスクDBとプロジェクトDBをリレーションで紐づける</td><td>各タスクからプロジェクトを選択。ロールアップで工数を自動集計。</td></tr>
+                        <tr><td>同じDBを複数ビューで管理</td><td>ボード、カレンダー、タイムライン等、目的別に「見え方」を切り替える。</td></tr>
+                        <tr><td>PARA／セカンドブレイン構成</td><td>Projects, Areas, Resources, Archivesですべてを分類管理する。</td></tr>
+                        <tr><td>会議メモDBとクライアントDB連携</td><td>顧客ページから過去の全会議履歴を参照できるようにする。</td></tr>
+                        <tr><td>リレーション＋ロールアップで依存タスク管理</td><td>自己リレーションで依存関係を作り、未完了の先行タスクを可視化。</td></tr>
+                        <tr><td>テンプレートを使った標準化</td><td>会議メモ等にあらかじめアジェンダ等の枠を用意し、抜け漏れを防ぐ。</td></tr>
+                        <tr><td>習慣トラッカー＋月次集計</td><td>日次チェックと月次DBを紐付け、ロールアップで達成率を自動計算。</td></tr>
+                        <tr><td>読書・資料DBとプロジェクト連携</td><td>どの案件で参照した資料かを紐付け、ナレッジを再利用しやすくする。</td></tr>
+                        <tr><td>クライアント管理（簡易CRM）</td><td>商談DBと紐付け、クライアント単位の売上見込みを集計管理する。</td></tr>
+                        <tr><td>OKR／目標管理とタスク連携</td><td>目標DBとタスクDBを紐付け、各目標の進捗状況を自動で追う。</td></tr>
+                        <tr><td>日記DBと気分・体調トラッカー</td><td>気分や体調を記録し、フィルターで特定条件の日だけ抽出分析する。</td></tr>
+                        <tr><td>コンテンツカレンダー</td><td>ステータス管理で「執筆中」「公開済」等を可視化。担当者別ビューも活用。</td></tr>
+                        <tr><td>定例ミーティング専用ビュー</td><td>会議種別でフィルターし、特定の定例だけを追えるビューを作る。</td></tr>
+                        <tr><td>家計簿・支出DBの集計</td><td>カテゴリ別・月別にロールアップで自動集計し、ダッシュボード化する。</td></tr>
+                        <tr><td>学習ノートDBと課題DB連携</td><td>講義と課題を紐付け、科目ごとの提出状況を管理する。</td></tr>
+                        <tr><td>チームWikiとプロジェクト結合</td><td>プロジェクトページに関連するWiki手順書をフィルター表示させる。</td></tr>
+                        <tr><td>ステータス＋グループ化でカンバン管理</td><td>ステータス×優先度などの二軸でタスクを整理し、着手順を決める。</td></tr>
+                        <tr><td>インボックスDBへの振り分け</td><td>全情報を一旦インボックスに入れ、そこから各DBへ移動させるフロー。</td></tr>
+                        <tr><td>ダッシュボードページで集約</td><td>主要DBのリンクドビューを集め、今日やるべきことを一画面に表示。</td></tr>
+                        <tr><td>テンプレートギャラリー自作</td><td>よく使う構成を自分用テンプレート集として保存し、複製して使う。</td></tr>
                     </tbody>
                 </table>
             </section>
 
-            <!-- タブ5: テスト・編集 事例17〜20 -->
-            <section id="tab5" class="tab-content">
+            <section id="tab-n8n" class="tab-content">
                 <table class="case-table">
                     <thead>
                         <tr>
-                            <th class="col-task">作業・目的</th>
-                            <th class="col-detail">詳細補足・留意点</th>
+                            <th style="width: 30%;">操作・目的</th>
+                            <th style="width: 70%;">詳細・リカバリ</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- 事例17 -->
-                        <tr>
-                            <td>フォームの動作確認用ダミーデータ入力</td>
-                            <td>テスト環境のフォームについて、よく使うダミー氏名やメールアドレス、会社名などのセットを拡張機能に登録し、ワンクリックで入力欄に流し込めるようにする。本番データを誤って入力しないよう、ドメイン名を専用のテスト用に固定するなど、安全側に倒した設計が重要である。E2Eテストツールほど本格的ではないが、CSやバックオフィス担当者が軽く動作確認を行う用途には十分である。</td>
-                        </tr>
-                        <!-- 事例18 -->
-                        <tr>
-                            <td>表示テキストのその場レビュー用編集モード</td>
-                            <td>画面上の文言を一時的に編集可能にし、その場で文脈を確認しながら改善案を書き込めるモードを提供する。実際のサーバー上の内容は変更せず、あくまでレビュー用のローカル表示として扱うことで、非エンジニアでも文言レビューに参加しやすくする。レビュー後は、編集した内容をまとめてテキストとしてコピーできるようにしておくと、開発チームへのフィードバックがスムーズになる。</td>
-                        </tr>
-                        <!-- 事例19 -->
-                        <tr>
-                            <td>エラー表示やバリデーションメッセージの収集</td>
-                            <td>入力ミス時に表示されるエラーメッセージを、拡張機能経由でまとめて収集し、エクセルやスプレッドシートに貼り付けられる一覧として出力する。CSや品質管理担当が、どの入力項目でどのようなエラーが出るかを整理するのに役立つ。多言語対応を行う場合は、エラー文言のパターン洗い出しにも利用できる。ただし個人情報が含まれないよう、入力値そのものではなくメッセージ部分のみに限定して取得する運用が望ましい。</td>
-                        </tr>
-                        <!-- 事例20 -->
-                        <tr>
-                            <td>ABテスト結果画面から主要指標だけを抜き出し</td>
-                            <td>マーケティングツールのABテスト結果画面を開いたときに、コンバージョン率やサンプル数、期間など主要指標だけを抜き出して、共有用のメモフォーマットに整える。現場担当者がチャットや議事録に貼り付けるときに、余計な情報を手作業で削る必要がなくなる。正式なレポートはツール側のエクスポート機能に任せつつ、日々の軽い共有にはこの簡易出力を使う、といった役割分担が現実的である。</td>
-                        </tr>
+                        <tr><td>タイムゾーン設定</td><td>Cron等がズレないよう、Workflow設定でJST等に合わせておく。</td></tr>
+                        <tr><td>手動実行（Execute workflow）</td><td>その場で実行テスト。エラー時は該当ノードを確認し修正・再実行。</td></tr>
+                        <tr><td>単一ノード実行</td><td>特定ノードだけテスト実行。前処理が重い場合に効率的。</td></tr>
+                        <tr><td>トリガーの種類の理解</td><td>Webhook(外部呼出)、Cron(時間)、アプリトリガー(イベント)を使い分ける。</td></tr>
+                        <tr><td>Webhook Trigger設定</td><td>テスト時はListenモードで受信確認。本番URLとの切り替えに注意。</td></tr>
+                        <tr><td>Cron Trigger設定</td><td>指定時間に動かない場合はタイムゾーンと有効化スイッチを確認。</td></tr>
+                        <tr><td>アプリトリガー検知</td><td>検知されない時は認証、権限、対象フォルダ等を再確認し作り直す。</td></tr>
+                        <tr><td>HTTP Requestノード</td><td>任意APIを実行。4xx/5xxエラー時は設定値とAPI仕様を照合。</td></tr>
+                        <tr><td>クレデンシャル作成</td><td>認証情報を作成・選択。エラー時は再認証やキー再発行を行う。</td></tr>
+                        <tr><td>クレデンシャルエラー対処</td><td>Invalid表示時は、再接続テストを行い、NW設定等も確認する。</td></tr>
+                        <tr><td>Pin data (データ固定)</td><td>サンプルデータを固定し、トリガー再実行なしで下流ノードを調整。</td></tr>
+                        <tr><td>Items (配列) の理解</td><td>データが増減する場合は実行ビューで確認し、不要なループを制御。</td></tr>
+                        <tr><td>Setノードで整理</td><td>必要なフィールドのみ残す、変数を定義する等でデータ構造を整える。</td></tr>
+                        <tr><td>Expressions (式)</td><td>前ノードの値を動的に参照。エラー時は固定値で確認後、パスを修正。</td></tr>
+                        <tr><td>IF / Filter条件分岐</td><td>条件が効かない時は、型（数値/文字列）や入力値を再確認する。</td></tr>
+                        <tr><td>Switchノード分岐</td><td>複数ルートへの分岐。新ルート追加時は既存への影響を確認する。</td></tr>
+                        <tr><td>Merge / Combine</td><td>データ結合。Primary/Secondaryや結合キーの設定ミスに注意。</td></tr>
+                        <tr><td>エラー時の動作設定</td><td>「Continue on Fail」で停止を防ぐ。後で原因究明が必要。</td></tr>
+                        <tr><td>実行ログ (Executions)</td><td>過去の成功・失敗履歴を確認し、いつから動かなくなったか特定。</td></tr>
+                        <tr><td>ワークフロー有効化</td><td>本番稼働スイッチ。不具合時は即無効化し、コピー版で修正テスト。</td></tr>
+                        <tr><td>テンプレート活用</td><td>公式例を読み込み、構造を真似る。理解のためコメントを残すと良い。</td></tr>
+                        <tr><td>エクスポートでバックアップ</td><td><strong>【リカバリ】</strong> 修正前は必ずJSONでエクスポートして保存する。</td></tr>
+                        <tr><td>環境変数・秘密情報</td><td>APIキーは直接書かずクレデンシャルや環境変数で管理しリスク低減。</td></tr>
                     </tbody>
                 </table>
             </section>
         </main>
     </div>
-
-    <!-- タブ切り替えを制御するJavaScriptを読み込む -->
     <script src="popup.js"></script>
 </body>
 </html>
