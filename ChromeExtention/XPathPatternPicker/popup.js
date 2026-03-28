@@ -1,6 +1,6 @@
-// - ONボタン: content.js を inject して選択モードON
-// - OFFボタン: 選択モードOFF
-// - XPath はクリック時に自動でクリップボードにコピーされるためテキストエリア不要
+// ONボタン: content.js を inject して選択モードON
+// OFFボタン: 選択モードOFF
+// XPath はクリック時に自動でクリップボードにコピーされるためテキストエリア不要
 
 const onButton = document.getElementById("onButton");
 const offButton = document.getElementById("offButton");
