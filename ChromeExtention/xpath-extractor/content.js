@@ -99,7 +99,7 @@ function generateAbsoluteXPath(element) {
         return "/html/body";
     }
     
-    if (!element || !element.parentNode || element === document.documentElement) {
+    if (!element || !element.parentElement || element === document.documentElement) {
         if (element === document.documentElement) {
             return "/html";
         }
@@ -107,20 +107,21 @@ function generateAbsoluteXPath(element) {
     }
     
     let index = 1;
-    const siblings = element.parentNode.children;
-    const tagName = element.tagName.toLowerCase();
+    const siblings = element.parentElement.children;
+    const tagName = element.localName || element.tagName.toLowerCase();
     
     for (let i = 0; i < siblings.length; i++) {
         const sibling = siblings[i];
         if (sibling === element) {
             break;
         }
-        if (sibling.tagName && sibling.tagName.toLowerCase() === tagName) {
+        const siblingTagName = sibling.localName || (sibling.tagName ? sibling.tagName.toLowerCase() : "");
+        if (siblingTagName === tagName) {
             index++;
         }
     }
     
-    const parentXPath = generateAbsoluteXPath(element.parentNode);
+    const parentXPath = generateAbsoluteXPath(element.parentElement);
     return `${parentXPath}/${tagName}[${index}]`;
 }
 
@@ -468,7 +469,8 @@ function collectElementsWithWildcard(segments, segmentIndex, currentNode) {
         // ワイルドカードの場合：同じタグ名の全ての子要素を対象
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
-            if (child.tagName && child.tagName.toLowerCase() === parsed.tag) {
+            const childTagName = child.localName || (child.tagName ? child.tagName.toLowerCase() : "");
+            if (childTagName === parsed.tag) {
                 const subResults = collectElementsWithWildcard(segments, segmentIndex + 1, child);
                 results = results.concat(subResults);
             }
@@ -480,7 +482,8 @@ function collectElementsWithWildcard(segments, segmentIndex, currentNode) {
         
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
-            if (child.tagName && child.tagName.toLowerCase() === parsed.tag) {
+            const childTagName = child.localName || (child.tagName ? child.tagName.toLowerCase() : "");
+            if (childTagName === parsed.tag) {
                 count++;
                 if (count === targetIndex) {
                     const subResults = collectElementsWithWildcard(segments, segmentIndex + 1, child);
@@ -796,6 +799,9 @@ function handleElementClick(event) {
     event.stopPropagation();
     
     const element = event.target;
+    if (!(element instanceof Element)) {
+        return;
+    }
     
     // 自分自身のオーバーレイ要素は無視
     if (element.classList.contains("xpath-extractor-highlight")) {
@@ -811,7 +817,7 @@ function handleElementClick(event) {
     }
     
     // 新しい要素を選択
-    const xpath = generateXPath(element);
+    const xpath = generateAbsoluteXPath(element);
     selectedElements.push({ element: element, xpath: xpath });
     
     // パターンを更新
@@ -843,6 +849,9 @@ function handleElementDoubleClick(event) {
     event.stopPropagation();
     
     const element = event.target;
+    if (!(element instanceof Element)) {
+        return;
+    }
     
     // 選択リストから削除
     const index = selectedElements.findIndex((sel) => sel.element === element);
@@ -885,6 +894,9 @@ function handleMouseOver(event) {
     }
     
     const element = event.target;
+    if (!(element instanceof Element)) {
+        return;
+    }
     if (element.classList.contains("xpath-extractor-highlight")) {
         return;
     }
@@ -900,6 +912,9 @@ function handleMouseOver(event) {
  */
 function handleMouseOut(event) {
     const element = event.target;
+    if (!(element instanceof Element)) {
+        return;
+    }
     element.classList.remove("xpath-extractor-hover");
 }
 
