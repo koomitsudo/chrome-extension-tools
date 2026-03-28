@@ -32,6 +32,7 @@ function enableSelectionMode() {
         return;
     }
     selectionModeEnabled = true;
+    notifySelectionModeState(true);
 
     // キャプチャフェーズでクリックを捕捉し、ページ本来のクリックを止める。
     clickListener = function(event) {
@@ -46,15 +47,9 @@ function enableSelectionMode() {
 
         // 実際にハンドリングするターゲット要素を決める。
         // クリックターゲットがテキストノードなど非HTMLElementの場合は親要素を使う。
-        let target = event.target;
+        const target = normalizeClickTarget(event.target);
         if (!target) {
-            cleanUpAfterSelection();
-            return;
-        }
-        if (target.nodeType !== Node.ELEMENT_NODE) {
-            target = target.parentElement;
-        }
-        if (!target || target.nodeType !== Node.ELEMENT_NODE) {
+            showToast("Invalid target", true);
             cleanUpAfterSelection();
             return;
         }
@@ -63,10 +58,16 @@ function enableSelectionMode() {
         highlightElement(target);
 
         // 対象要素の絶対XPathを計算する。
-        const xpath = computeFullXPath(target);
+        const xpathResult = computeFullXPath(target);
+        if (!xpathResult.ok) {
+            console.warn("XPath generation failed:", xpathResult.error);
+            showToast("XPath unsupported", true);
+            cleanUpAfterSelection();
+            return;
+        }
 
         // クリップボードにコピーを試みる。
-        copyTextToClipboard(xpath).then(() => {
+        copyTextToClipboard(xpathResult.xpath).then(() => {
             // 成功時はトーストで通知する。
             showToast("XPath copied", false);
         }).catch(() => {
@@ -90,6 +91,7 @@ function disableSelectionMode() {
         window.removeEventListener("click", clickListener, true);
         clickListener = null;
     }
+    notifySelectionModeState(false);
 }
 
 // 一度のクリック処理が終わったあとの共通クリーンアップ処理。
@@ -98,28 +100,103 @@ function cleanUpAfterSelection() {
     disableSelectionMode();
 }
 
+function normalizeClickTarget(target) {
+    if (!target) {
+        return null;
+    }
+    let element = target;
+    if (element.nodeType !== Node.ELEMENT_NODE) {
+        element = element.parentElement;
+    }
+    if (!element || element.nodeType !== Node.ELEMENT_NODE) {
+        return null;
+    }
+    return element;
+}
+
 // 絶対XPathを計算する関数。
 // DevToolsの「Copy full XPath」と同様に、/html/body/... のように
 // /タグ名[インデックス] を連結してルートまでの絶対パスを生成する。
 function computeFullXPath(element) {
-    const segments = [];
-    let el = element;
-    while (el && el.nodeType === Node.ELEMENT_NODE) {
-        const tagName = el.tagName.toLowerCase();
-        let index = 1;
-        let sibling = el.previousElementSibling;
-        // 同じタグ名を持つ兄弟要素のうち、前方にある要素を数えてインデックスを決める。
-        while (sibling) {
-            if (sibling.tagName === el.tagName) {
-                index++;
-            }
-            sibling = sibling.previousElementSibling;
-        }
-        segments.unshift(tagName + "[" + index + "]");
-        el = el.parentElement;
+    if (!(element instanceof Element)) {
+        return {ok: false, xpath: null, error: "invalid-element"};
     }
-    // ルートからの絶対パスとして結合する。
-    return "/" + segments.join("/");
+
+    const rootNode = typeof element.getRootNode === "function" ? element.getRootNode() : null;
+    if (typeof ShadowRoot !== "undefined" && rootNode instanceof ShadowRoot) {
+        // Shadow DOM内は通常のdocument基準XPathでは表現できない。
+        return {ok: false, xpath: null, error: "shadow-dom-not-supported"};
+    }
+
+    if (!document.documentElement || !document.documentElement.contains(element)) {
+        return {ok: false, xpath: null, error: "detached-element"};
+    }
+
+    const segments = [];
+    let current = element;
+
+    while (current && current.nodeType === Node.ELEMENT_NODE) {
+        const nodeName = buildXPathNodeName(current);
+        const index = getSiblingIndexForXPath(current);
+        segments.unshift(nodeName + "[" + index + "]");
+        current = current.parentElement;
+    }
+
+    if (segments.length === 0) {
+        return {ok: false, xpath: null, error: "empty-xpath"};
+    }
+
+    const xpath = "/" + segments.join("/");
+    if (!isXPathPointingToElement(xpath, element)) {
+        return {ok: false, xpath: null, error: "xpath-validation-failed"};
+    }
+
+    return {ok: true, xpath: xpath, error: null};
+}
+
+function buildXPathNodeName(element) {
+    const htmlNamespace = "http://www.w3.org/1999/xhtml";
+    const localName = element.localName || element.tagName || "*";
+
+    if (element.namespaceURI && element.namespaceURI !== htmlNamespace) {
+        const rawName = element.nodeName || localName;
+        return "*[name()='" + rawName + "']";
+    }
+
+    return String(localName).toLowerCase();
+}
+
+function getSiblingIndexForXPath(element) {
+    let index = 1;
+    let sibling = element.previousElementSibling;
+
+    while (sibling) {
+        if (isSameXPathElementType(sibling, element)) {
+            index++;
+        }
+        sibling = sibling.previousElementSibling;
+    }
+
+    return index;
+}
+
+function isSameXPathElementType(left, right) {
+    return left.localName === right.localName && left.namespaceURI === right.namespaceURI;
+}
+
+function isXPathPointingToElement(xpath, element) {
+    try {
+        const result = document.evaluate(
+            xpath,
+            document,
+            null,
+            XPathResult.FIRST_ORDERED_NODE_TYPE,
+            null
+        );
+        return !!result && result.singleNodeValue === element;
+    } catch (e) {
+        return false;
+    }
 }
 
 // クリックされた要素の位置に固定配置のオーバーレイを表示する。
@@ -143,6 +220,9 @@ function highlightElement(element) {
 
     // bodyに追加する。documentElementでも良いが、ここではbodyを採用する。
     const parent = document.body || document.documentElement;
+    if (!parent) {
+        return;
+    }
     parent.appendChild(overlay);
 
     // 300ミリ秒経過後にオーバーレイを削除する。
@@ -185,6 +265,10 @@ function fallbackCopyText(text) {
             textarea.style.left = "-9999px";
             textarea.style.top = "0";
             const parent = document.body || document.documentElement;
+            if (!parent) {
+                reject(new Error("copy parent not found"));
+                return;
+            }
             parent.appendChild(textarea);
             textarea.focus();
             textarea.select();
@@ -226,6 +310,9 @@ function showToast(message, error) {
     toastElement.style.zIndex = "1000000";
     toastElement.style.pointerEvents = "none";
     const parent = document.body || document.documentElement;
+    if (!parent) {
+        return;
+    }
     parent.appendChild(toastElement);
 
     // 約1.2秒後に自動的に消す。
@@ -235,4 +322,14 @@ function showToast(message, error) {
             toastElement = null;
         }
     }, 1200);
+}
+
+function notifySelectionModeState(enabled) {
+    chrome.runtime.sendMessage({
+        type: "xpathpicker_selection_mode_changed",
+        enabled: !!enabled
+    }, () => {
+        // 受信側がいないケースでは lastError が出るが無視する。
+        void chrome.runtime.lastError;
+    });
 }
