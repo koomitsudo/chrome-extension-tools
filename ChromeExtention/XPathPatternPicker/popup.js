@@ -58,9 +58,9 @@ onButton.addEventListener("click", async function() {
         }
         const tab = tabs[0];
 
-        // content.js をアクティブタブに inject する
+        // content.js をアクティブタブの全フレームへ inject する
         await chrome.scripting.executeScript({
-            target: {tabId: tab.id},
+            target: {tabId: tab.id, allFrames: true},
             files: ["content.js"]
         });
 

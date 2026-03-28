@@ -154,17 +154,29 @@ if (!window.__xpathPickerInitialized) {
         if (target.id === OVERLAY_ID) {
             return;
         }
-        const xpath = getAbsoluteXPath(target);
+
+        const xpathInfo = getAbsoluteXPath(target);
+        if (!xpathInfo || !xpathInfo.xpath) {
+            showErrorFeedback();
+            console.warn("XPath生成失敗:", xpathInfo && xpathInfo.error ? xpathInfo.error : "unknown");
+            return;
+        }
+        const xpath = xpathInfo.xpath;
 
         // クリップボードに自動コピー
-        navigator.clipboard.writeText(xpath).then(function() {
-            // コピー成功時: 一瞬だけ緑色を表示
-            showCopyFeedback();
-        }).catch(function(error) {
-            console.error("クリップボードへのコピーに失敗:", error);
-            // フォールバック: execCommand を試す
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+            navigator.clipboard.writeText(xpath).then(function() {
+                // コピー成功時: 一瞬だけ緑色を表示
+                showCopyFeedback();
+            }).catch(function(error) {
+                console.error("クリップボードへのコピーに失敗:", error);
+                // フォールバック: execCommand を試す
+                fallbackCopyToClipboard(xpath);
+            });
+        } else {
+            // navigator.clipboard が使えないページでは即フォールバック
             fallbackCopyToClipboard(xpath);
-        });
+        }
 
         // background.js にも通知（storage 保存用、オプション）
         chrome.runtime.sendMessage({
@@ -191,12 +203,34 @@ if (!window.__xpathPickerInitialized) {
         }, 300);
     }
 
+    // エラー時の視覚フィードバック（赤色）
+    function showErrorFeedback() {
+        if (!overlayElement) {
+            return;
+        }
+        overlayElement.style.borderColor = "#FF0000";
+        overlayElement.style.backgroundColor = "rgba(255, 0, 0, 0.25)";
+        setTimeout(function() {
+            if (overlayElement) {
+                overlayElement.style.borderColor = "transparent";
+                overlayElement.style.backgroundColor = "transparent";
+            }
+        }, 450);
+    }
+
     // フォールバック: execCommand でコピー
     function fallbackCopyToClipboard(text) {
         const textarea = document.createElement("textarea");
         textarea.value = text;
         textarea.style.cssText = "position:fixed;top:-9999px;left:-9999px;";
-        document.body.appendChild(textarea);
+
+        const parent = document.body || document.documentElement;
+        if (!parent) {
+            console.error("コピー先となるDOMルートが見つかりません");
+            return;
+        }
+
+        parent.appendChild(textarea);
         textarea.select();
         try {
             document.execCommand("copy");
@@ -204,7 +238,9 @@ if (!window.__xpathPickerInitialized) {
         } catch (e) {
             console.error("フォールバックコピーも失敗:", e);
         }
-        document.body.removeChild(textarea);
+        if (textarea.parentNode) {
+            textarea.parentNode.removeChild(textarea);
+        }
     }
 
     // ダブルクリック時: 選択モードを終了
@@ -218,26 +254,85 @@ if (!window.__xpathPickerInitialized) {
     }
 
     // 絶対XPath(Full XPath)生成
-    // target から親をたどり、各階層で tagName[index] を付与（ 例: /html[1]/body[1]/div[2]/span[3]
+    // target から親をたどり、各階層で tagName[index] を付与（例: /html[1]/body[1]/div[2]/span[3]）
     function getAbsoluteXPath(element) {
+        if (!(element instanceof Element)) {
+            return {xpath: null, error: "invalid-element"};
+        }
+
+        const rootNode = typeof element.getRootNode === "function" ? element.getRootNode() : null;
+        if (typeof ShadowRoot !== "undefined" && rootNode instanceof ShadowRoot) {
+            // Shadow DOM 内の要素は通常の XPath では表現できない
+            return {xpath: null, error: "shadow-dom-not-supported"};
+        }
+
+        if (!document.documentElement || !document.documentElement.contains(element)) {
+            return {xpath: null, error: "detached-element"};
+        }
+
         const segments = [];
         let currentNode = element;
         while (currentNode && currentNode.nodeType === Node.ELEMENT_NODE) {
-            const tagName = currentNode.tagName.toLowerCase();
-            let index = 1;
-            let sibling = currentNode.previousElementSibling;
-            while (sibling) {
-                if (sibling.tagName.toLowerCase() === tagName) {
-                    index++;
-                }
-                sibling = sibling.previousElementSibling;
-            }
-            const segment = tagName + "[" + index + "]";
-            segments.unshift(segment);
+            const nodeName = getXPathNodeName(currentNode);
+            const index = getSiblingIndexForXPath(currentNode);
+            segments.unshift(nodeName + "[" + index + "]");
             currentNode = currentNode.parentElement;
         }
+
+        if (segments.length === 0) {
+            return {xpath: null, error: "empty-xpath"};
+        }
+
         const xpath = "/" + segments.join("/");
-        return xpath;
+        if (!isXPathResolvedToElement(xpath, element)) {
+            return {xpath: null, error: "xpath-validation-failed"};
+        }
+
+        return {xpath: xpath, error: null};
+    }
+
+    function getXPathNodeName(element) {
+        const htmlNamespace = "http://www.w3.org/1999/xhtml";
+        const localName = element.localName || element.tagName || "*";
+
+        if (element.namespaceURI && element.namespaceURI !== htmlNamespace) {
+            const rawName = element.nodeName || localName;
+            return "*[name()='" + rawName + "']";
+        }
+
+        return String(localName).toLowerCase();
+    }
+
+    function getSiblingIndexForXPath(element) {
+        let index = 1;
+        let sibling = element.previousElementSibling;
+        while (sibling) {
+            if (isSameXPathElementType(sibling, element)) {
+                index++;
+            }
+            sibling = sibling.previousElementSibling;
+        }
+        return index;
+    }
+
+    function isSameXPathElementType(left, right) {
+        return left.localName === right.localName && left.namespaceURI === right.namespaceURI;
+    }
+
+    function isXPathResolvedToElement(xpath, element) {
+        try {
+            const result = document.evaluate(
+                xpath,
+                document,
+                null,
+                XPathResult.FIRST_ORDERED_NODE_TYPE,
+                null
+            );
+            return !!result && result.singleNodeValue === element;
+        } catch (e) {
+            console.warn("XPath評価エラー:", e);
+            return false;
+        }
     }
 
     // popup.js からのメッセージ受付
